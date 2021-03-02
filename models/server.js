@@ -1,4 +1,5 @@
 const express = require('express');
+const {conexionMongo} = require('../database/config');
 
 
 class Server {
@@ -10,6 +11,10 @@ class Server {
         //rutas
         this.routes();
 
+        //conexion a mongo
+
+        this.conexiondatabase()
+
 
     }
 
@@ -17,6 +22,10 @@ class Server {
         //directorio publico
         this.app.use(express.static('public'))
         this.app.use(express.json());
+    }
+
+  async conexiondatabase () {
+       await conexionMongo()
     }
     routes(){
 

@@ -1,45 +1,97 @@
 
 const {response, request} = require('express')
+const bcrypjs = require('bcryptjs');
+const Usuario = require('../models/usuarios')
 
 
-const getUasuario = (req = request, res = response)=> {
+const getUasuario = async(req = request, res = response)=> {
 
-    const {nombre, apellido} = req.query
+        const {limite, desde} = req.query;
+        const query = {estado:true}
+
+        
+
+        // const dataMongo =   await Usuario.find(query)
+        //        .limit(Number(limite))
+        //        .skip(Number(desde));
+
+        // const total = await Usuario.count(query)
+
+        // esta es una forma de retornar en un arreglo una anidacion de async
+
+        const [cantidadUsuarios, usuarios] = await Promise.all([
+            Usuario.countDocuments(query),
+            Usuario.find(query)
+               .limit(Number(limite))
+               .skip(Number(desde))
+
+        ])
+              
         res.json({
-            msg: {
-                nombre,
-                apellido
-            }
-    
-        })
+            cantidadUsuarios,
+            usuarios
+
+          
+       })
+
       
 }
 
-const putUsuario = (req = request, res = response)=> {
+const putUsuario = async(req = request, res = response)=> {
+   
+    const { id } = req.params
+    
+    const {password, google,email, ...wea } = req.body;
+    const data = await Usuario.findByIdAndUpdate(id, wea, {new: true} )
 
-    const {id} = req.params
     res.json({
-        msg: id,
-
+        msg: data
     })
+
+
   }
 
-  const postUsuario = (req = request, res = response)=> {
+  const postUsuario = async(req = request, res = response)=> {
 
-    const  body = req.body
+    const {nombre, apellido , email, password , rol} = req.body;
+    const usuario = new Usuario({nombre, email, apellido, password , rol});
+     
+    //esta es la encriptacion de password
+    const salt = bcrypjs.genSaltSync();
+    usuario.password = bcrypjs.hashSync(password, salt);
+    
+   await usuario.save( (err, data) =>{
+       if(err) {
+      
+        return res.json({
+            ok: false,
+            msg: err
+        })
 
-    res.json({
-        msg: {
-            body
-        }
+       } else{
 
-    })
+        res.json({
+            ok: true,
+            msg: data
+        })
+
+       }
+       
+   });
+
   }
 
-  const deleteUsuario = (req, res)=> {
+  const deleteUsuario = async(req, res)=> {
+    const { id } = req.params
+    
+    const {password, google,email, ...wea } = req.body;
+     const data = await Usuario.findByIdAndUpdate(id ,{estado: false} );
+     const user = await Usuario.findById(id)
+
     res.json({
-        ok: 'delete api',
+       msg: user
     })
+
   }
 
 
