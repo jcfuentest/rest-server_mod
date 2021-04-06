@@ -4,7 +4,8 @@ const { Router, request }  = require('express');
 const { getUasuario, putUsuario ,postUsuario,deleteUsuario} = require('../controlller');
 const { check } = require('express-validator');
 const {validatorExpress} = require('../meddlewwere/index')
-const {validadorRol, validadorEmail, usuarioPorId} = require('../helpers/valida-rol')
+const {validadorRol, validadorEmail, usuarioPorId,validadorRolAdmin} = require('../helpers/valida-rol');
+const { valadarjwt } = require('../meddlewwere/validarJwt');
 
 
 
@@ -30,6 +31,12 @@ const router = Router();
     validatorExpress
   ],postUsuario )
 
-  router.delete('/:id', deleteUsuario )
+  router.delete('/:id',[
+    valadarjwt,
+    check('id', 'no es un id valido').isMongoId(),
+    check('id').custom(usuarioPorId),
+    check('id').custom(validadorRolAdmin),
+    validatorExpress
+  ], deleteUsuario )
 
   module.exports = router;

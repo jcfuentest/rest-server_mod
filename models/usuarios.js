@@ -40,8 +40,9 @@ const squemaUsuario =  Schema({
 });
 
 squemaUsuario.methods.toJSON = function() {
-  const {__v, password, ...elresto} = this.toObject();
-  return elresto
+  const {__v, password, _id, ...elresto} = this.toObject();
+  elresto.uid = _id
+  return elresto  
 }
 
 const modelo = model('Usuario', squemaUsuario );

@@ -83,19 +83,20 @@ const putUsuario = async(req = request, res = response)=> {
 
   const deleteUsuario = async(req, res)=> {
     const { id } = req.params
+
+    const {uid, usuarioAut} = req
+    console.log(uid , 'este es le id capturado');
+    console.log(usuarioAut, 'este es el uusario autenticado');
     
     const {password, google,email, ...wea } = req.body;
-     const data = await Usuario.findByIdAndUpdate(id ,{estado: false} );
-     const user = await Usuario.findById(id)
+     const data = await Usuario.findByIdAndUpdate(id ,{estado: false}, {new:true } )
 
     res.json({
-       msg: user
+       msg: data,
+       usuario_autenticado: usuarioAut
     })
 
   }
-
-
-
 module.exports = {
     getUasuario,
     putUsuario,

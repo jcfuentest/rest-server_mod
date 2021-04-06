@@ -29,7 +29,11 @@ class Server {
     }
     routes(){
 
-        this.app.use('/api/usuario', require('../routes/user'))
+        this.app.use('/api/auth', require('../routes/auth'));
+
+        this.app.use('/api/usuario', require('../routes/user'));
+      
+       
        
     }
 
